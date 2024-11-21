@@ -3,6 +3,8 @@ import markdown
 from data_utils import clone_data_repo,parse_md_files,chunk_documents
 from sentence_transformers import SentenceTransformer
 import requests
+from tqdm import tqdm 
+import json
 
 API_URL = "https://api-inference.huggingface.co/models/sentence-transformers/all-MiniLM-L6-v2"
 headers = {"Authorization": "Bearer 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"}
@@ -28,20 +30,12 @@ def main(args):
         for enum,document in enumerate(total_chunks):
             path = document['path']
             database[path] = []
-            for chunk in document['chunks']:
-                output = query({
-                    "inputs": {
-                    "source_sentence": "That is a happy person",
-                    "sentences": [
-                        "That is a happy dog",
-                        "That is a very happy person",
-                        "Today is a sunny day"
-                    ]
-                },
-                })
-                print('hey')
-                # embedding = encoder.encode(chunk.page_content)
-                # database[path].append({'chunk':chunk.page_content,'embedding':embedding})
+            for chunk in tqdm(document['chunks'],desc="Saving embedding data..."):
+                embedding = encoder.encode(chunk.page_content)
+                database[path].append({'chunk':chunk.page_content,'embedding':embedding.tolist()})
+        
+        with open('kb.json',"w") as file:
+            json.dump(database,file)
 
 
     return
