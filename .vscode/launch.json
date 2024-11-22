@@ -12,7 +12,7 @@
             "console": "integratedTerminal",
             "justMyCode": false,
             "args": [
-                "--create_kb"
+                //"--create_kb"
             ],
             "env": {
                 "CUDA_VISIBLE_DEVICES": "0",
