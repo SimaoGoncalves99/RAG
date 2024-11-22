@@ -3,12 +3,14 @@ from git import Repo
 import shutil
 from tqdm import tqdm
 from langchain.text_splitter import MarkdownHeaderTextSplitter
-import json 
+import json
 import numpy as np
 from numpy.linalg import norm
 
+
 class KB:
-    def __init__(self,data_path='',encoder_model=None,load_kb=False):
+
+    def __init__(self, data_path='', encoder_model=None, load_kb=False):
         self.encoder_model=encoder_model
         self.data_path = data_path
         self.load_kb = load_kb
@@ -18,7 +20,7 @@ class KB:
         else:
             self.database = self.create_kb(self.data_path)
 
-    def create_kb(self,data_path):
+    def create_kb(self, data_path):
 
         md_files = parse_md_files(data_path)
 
@@ -32,8 +34,9 @@ class KB:
                 (self.database).append({'chunk':chunk.page_content,'path':path,'embedding':embedding})
 
         return self.database
-    
-    def local_kb(self,data_path):
+
+
+    def local_kb(self, data_path):
 
         if os.path.isfile(data_path) and data_path.endswith('.json'):
             self.database = json.load(data_path)
@@ -41,8 +44,9 @@ class KB:
             raise RuntimeError("Please provide a valid path to a .json file")
         
         return self.database
-    
-    def retrieve_context(self,query,top_k=3,method='cosine'):
+
+
+    def retrieve_context(self, query, top_k=3, method='cosine'):
         
         query_embedding = (self.encoder_model).encode(query)
 
@@ -70,7 +74,8 @@ class KB:
 
         return retrieved_chunks
 
-def clone_data_repo(repo_url, clone_path,save_dir):
+
+def clone_data_repo(repo_url, clone_path, save_dir):
     # Clone the repo sparsely
     sparse_clone_path = os.path.join(clone_path, "docker_docs_repo")
     repo = Repo.clone_from(repo_url, sparse_clone_path, multi_options=["--no-checkout"])
@@ -91,6 +96,7 @@ def clone_data_repo(repo_url, clone_path,save_dir):
     shutil.rmtree(sparse_clone_path)
 
     print(f"Folder downloaded to: {final_path}")
+
 
 def parse_md_files(kb_path):
     """Generate markdown documents from data path
@@ -113,6 +119,7 @@ def parse_md_files(kb_path):
                     kb[file_path] = text
         
     return kb
+
 
 def chunk_documents(kb):
     

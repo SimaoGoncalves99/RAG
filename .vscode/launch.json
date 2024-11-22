@@ -14,7 +14,11 @@
             "args": [
                 "--create_kb"
             ],
-            "env": {"CUDA_VISIBLE_DEVICES":"0"}
+            "env": {
+                "CUDA_VISIBLE_DEVICES": "0",
+                "API_KEY": "2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3",
+                "DATA_PATH": "/mnt/data/docker_docs"
+            }
         }
     ]
 }

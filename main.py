@@ -1,7 +1,5 @@
 import argparse
 from sentence_transformers import SentenceTransformer
-import requests
-from tqdm import tqdm 
 import json
 from docker_kb.data_utils import KB
 from docker_kb.utils import generate_prompt
@@ -57,7 +55,7 @@ if __name__ == "__main__":
 
     parser.add_argument("--load_kb", action="store_true", help="Load the knowledge base saved in memory")
 
-    parser.add_argument("--api_key", type=str,default=" 2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3", help="API key for the Mistral AI LLM")
+    parser.add_argument("--api_key", type=str,default="2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3", help="API key for the Mistral AI LLM")
 
 
     parser.add_argument("--save_kb", action="store_true", help="Clone the docker repo and save the knowledge base data locally")
