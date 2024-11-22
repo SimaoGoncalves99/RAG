@@ -1,8 +1,86 @@
 import os
 from git import Repo
 import shutil
+from tqdm import tqdm
 import markdown
 from langchain.text_splitter import MarkdownHeaderTextSplitter
+from pathlib import Path
+import json 
+import numpy as np
+from numpy.linalg import norm
+
+class KB:
+    def __init__(self,data_path='',encoder_model=None,load_kb=False):
+        self.encoder_model=encoder_model
+        self.data_path = data_path
+        self.load_kb = load_kb
+
+        if self.load_kb:
+            self.database = self.local_kb(self.data_path)
+        else:
+            self.data_base = self.create_kb(self.data_path)
+
+    def create_kb(self,data_path):
+
+        md_files = parse_md_files(data_path)
+
+        chunked_docs = chunk_documents(md_files)
+
+        self.database = []
+        for doc in chunked_docs:
+            path = doc['path']
+            self.database = []
+            for chunk in tqdm(doc['chunks'],desc="Saving embedding data..."):
+                embedding = (self.encoder_model).encode(chunk.page_content)
+                self.database.extend({'chunk':chunk.page_content,'path':path,'embedding':embedding})
+
+        return self.database
+    
+    def local_kb(self,data_path):
+
+        if os.path.isfile(data_path) and data_path.endswith('.json'):
+            self.database = json.load(data_path)
+        else:
+            raise RuntimeError("Please provide a valid path to a .json file")
+        
+        return self.database
+    
+    def retrieve_context(self,query,top_k=3,method='cosine'):
+        
+        query_embedding = (self.encoder_model).encode(query)
+
+        # Step 1: Normalize the single embedding
+        query_embedding = query_embedding / np.linalg.norm(query_embedding)
+
+        results = []
+        embedding_matrix = np.array([d["embedding"] for d in self.database])  # Shape: (n, d)
+
+        similarities = np.dot(embedding_matrix,query_embedding)/(norm(embedding_matrix, axis=1)*norm(query_embedding))
+
+        if method == 'cosine':
+            similarities = np.dot(embedding_matrix,query_embedding)/(norm(embedding_matrix, axis=1)*norm(query_embedding))
+            
+            results = [{"id": self.database[i]["id"], "cosine_similarity": similarities[i],"chunk": self.database[i]["chunk"],"path":self.database[i]['path']} for i in range(len(similarities))]
+            
+            results = results.sort(key='cosine_similarity')
+
+            results = results[:top_k]
+
+        return results
+            
+
+        #     ({"cosine_similarity": cosine_similarity,"chunk": d["chunk"],"path":d['path']})
+        # elif method == 'euclidean':
+
+# # Convert embeddings to a matrix for batch processing
+# embedding_matrix = np.array([d["embedding"] for d in embedding_dicts])  # Shape: (n, d)
+
+# # Compute Euclidean distances in batch
+# distances = np.linalg.norm(embedding_matrix - single_embedding, axis=1)
+
+# # Combine results with IDs
+# results = [{"id": embedding_dicts[i]["id"], "euclidean_distance": distances[i]} for i in range(len(distances))]
+
 
 def clone_data_repo(repo_url, clone_path,save_dir):
     # Clone the repo sparsely
@@ -27,6 +105,14 @@ def clone_data_repo(repo_url, clone_path,save_dir):
     print(f"Folder downloaded to: {final_path}")
 
 def parse_md_files(kb_path):
+    """Generate markdown documents from data path
+
+    Args:
+        kb_path (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
 
     kb = {}
     for root, dirs, files in os.walk(kb_path):
@@ -52,3 +138,4 @@ def chunk_documents(kb):
         total_chunks.append({'path':key,'chunks':sections})
 
     return total_chunks
+
