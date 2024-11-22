@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Tuple, Union
 
 import numpy as np
 from mistralai import models
@@ -10,14 +10,13 @@ def generate_prompt(
         Dict[str, str | np.ndarray[Any, np.dtype[np.float32]]]
     ],
     one_shot: bool = False,
-) -> Union[List[models.Messages], List[models.MessagesTypedDict]]:
+) -> Tuple[Union[List[models.Messages], List[models.MessagesTypedDict]], str]:
     """Generate a prompt to be fed to the LLM API.
         Give the LLM a persona with a well defined task (clarify on common issues
         faced by developers regarding containerization (Docker) and related technologies).
         Use the retrieved chunks to supply the LLM with relevant factual grounding
         to the user's query. Additionaly, use the 'one_shot' option to feed the LLM with
         an example input-output pair so that some guidance is provided.
-    query
 
     Args:
         query (str): User's question
@@ -25,7 +24,8 @@ def generate_prompt(
         one_shot (bool): Flags whether an input-output pair example is supplied to the LLM context
 
     Returns:
-        messages (List[Dict[str, str]]): The prompt(s) to generate completions for, encoded as a list of dict with role and content
+        messages (Union[List[models.Messages], List[models.MessagesTypedDict]): The prompt(s) to generate completions for, encoded as a list of dict with role and content
+        prompt (str): The prompt in string format
     """
 
     context_info = ""
@@ -57,4 +57,4 @@ def generate_prompt(
             {"role": "user", "content": prompt},
         ]
 
-    return messages
+    return messages, prompt

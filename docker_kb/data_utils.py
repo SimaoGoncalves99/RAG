@@ -36,7 +36,7 @@ class KB:
     def __init__(
         self,
         encoder_model: SentenceTransformer,
-        data_path: str = "",
+        data_path: str | None = "",
         load_kb_content: bool = False,
     ):
         self.encoder_model = encoder_model
@@ -46,6 +46,7 @@ class KB:
 
         # Load the knowledge base data locally saved
         if self.load_kb_content:
+            assert self.data_path
             if os.path.isfile(self.data_path):
                 print(f"Loading knowledgebase...\n")
                 self.database = self.local_kb_content(self.data_path)
@@ -56,6 +57,7 @@ class KB:
         # Generate the knowledgebase content (chunked documents and embeddings)
         if generate_kb:
             print(f"Generating knowledgebase...\n")
+            assert self.data_path
             self.database = self.create_kb(self.data_path)
 
     def create_kb(

@@ -45,7 +45,7 @@ def main(args):
     )
 
     # Given the user query and the retrieved chunks, build the prompt to be fed to the LLM API
-    messages = generate_prompt(
+    messages, prompt = generate_prompt(
         query=args.query,
         retrieved_chunks=retrieved_chunks,
         one_shot=args.one_shot,
@@ -56,6 +56,7 @@ def main(args):
         model=args.llm_model, messages=messages
     )
 
+    print(f"Chatbot prompt:\n{prompt}\n\n")
     if chat_response is not None and chat_response.choices is not None:
         print(f"Chatbot answer:\n{chat_response.choices[0].message.content}\n")
 
