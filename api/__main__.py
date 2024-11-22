@@ -33,6 +33,8 @@ else:
 @app.post("/conversation/")
 async def process_query(request:str = Body(..., media_type="text/plain"))->PlainTextResponse:
 
+    response = {"code":200,'result':''}
+
     #Fetch context
     retrieved_chunks = kb_obj.retrieve_context(request,top_k=3,method='cosine')
 
@@ -45,9 +47,13 @@ async def process_query(request:str = Body(..., media_type="text/plain"))->Plain
         messages=messages
     )
 
-    response = chat_response.choices[0].message.content
+    response['result'] = chat_response.choices[0].message.content
 
-    return PlainTextResponse(response)
+    print(f"Chatbot prompt:\n{messages[0]['content']}\n\n")
+    print(f"Chatbot answer:\n{response['result']}\n")
+
+
+    return PlainTextResponse(response['result'])
 
 if __name__ == "__main__":
     uvicorn.run("__main__:app",host="0000",port=8000)

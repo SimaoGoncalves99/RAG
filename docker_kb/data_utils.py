@@ -6,7 +6,7 @@ from langchain.text_splitter import MarkdownHeaderTextSplitter
 import json
 import numpy as np
 from numpy.linalg import norm
-
+import re
 
 class KB:
 
@@ -109,6 +109,7 @@ def parse_md_files(kb_path):
     """
 
     kb = {}
+    regex = r"(?s)^---.*?---"
     for root, dirs, files in os.walk(kb_path):
         for file in files:
             if file.endswith('.md'):
@@ -116,7 +117,10 @@ def parse_md_files(kb_path):
     
                 with open(file_path, 'r', encoding='utf-8') as file:
                     text = file.read()
-                    kb[file_path] = text
+                    #Delete the initial table from the md_files
+                    text = re.sub(regex, "", text).strip()
+                    if len(text) != 0:
+                        kb[file_path] = text
         
     return kb
 
