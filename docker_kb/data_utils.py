@@ -2,9 +2,7 @@ import os
 from git import Repo
 import shutil
 from tqdm import tqdm
-import markdown
 from langchain.text_splitter import MarkdownHeaderTextSplitter
-from pathlib import Path
 import json 
 import numpy as np
 from numpy.linalg import norm
@@ -71,10 +69,6 @@ class KB:
         retrieved_chunks = results[:top_k]
 
         return retrieved_chunks
-            
-
-        #     ({"cosine_similarity": cosine_similarity,"chunk": d["chunk"],"path":d['path']})
-        # elif method == 'euclidean':
 
 def clone_data_repo(repo_url, clone_path,save_dir):
     # Clone the repo sparsely

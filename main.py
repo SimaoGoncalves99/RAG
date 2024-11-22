@@ -3,15 +3,10 @@ from sentence_transformers import SentenceTransformer
 import requests
 from tqdm import tqdm 
 import json
-from data_utils import KB
-from utils import generate_prompt
+from docker_kb.data_utils import KB
+from docker_kb.utils import generate_prompt
 from mistralai import Mistral
 
-from getpass import getpass
-
-
-
-query = "How can I install docker?"
 
 def main(args):
 
@@ -30,10 +25,10 @@ def main(args):
             json.dump(kb_obj.database,file)
 
     #Fetch context
-    retrieved_chunks = kb_obj.retrieve_context(query,top_k=3,method='cosine')
+    retrieved_chunks = kb_obj.retrieve_context(args.query,top_k=3,method='cosine')
 
     #Build LLM input
-    messages = generate_prompt(query=query,retrieved_chunks=retrieved_chunks)
+    messages = generate_prompt(query=args.query,retrieved_chunks=retrieved_chunks)
 
     #Send a request to a LLM model through an API
     chat_response = client.chat.complete(
@@ -47,8 +42,6 @@ def main(args):
     return
 
 
-
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -57,6 +50,10 @@ if __name__ == "__main__":
     parser.add_argument("--documents_path", type=str,default="/mnt/data/docker_docs", help="Increase output verbosity")
 
     parser.add_argument("--json_path", type=str,default="./kb_json", help="Increase output verbosity")
+
+    parser.add_argument("--query", type=str, default="What is docker?", help="Encoder model")
+
+    parser.add_argument("--top_k", type=int,default=3, help="Number of chunks to return")
 
     parser.add_argument("--load_kb", action="store_true", help="Load the knowledge base saved in memory")
 
