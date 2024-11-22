@@ -36,10 +36,10 @@ async def process_query(request:str = Body(..., media_type="text/plain"))->Plain
     response = {"code":200,'result':''}
 
     #Fetch context
-    retrieved_chunks = kb_obj.retrieve_context(request,top_k=3,method='cosine')
+    retrieved_chunks = kb_obj.retrieve_context(request,top_k=10,method='cosine')
 
     #Build LLM input
-    messages = generate_prompt(query=request,retrieved_chunks=retrieved_chunks)
+    messages = generate_prompt(query=request,retrieved_chunks=retrieved_chunks,one_shot=True)
 
     #Send a request to a LLM model through an API
     chat_response = client.chat.complete(
