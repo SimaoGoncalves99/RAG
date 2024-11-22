@@ -18,7 +18,7 @@ class KB:
         if self.load_kb:
             self.database = self.local_kb(self.data_path)
         else:
-            self.data_base = self.create_kb(self.data_path)
+            self.database = self.create_kb(self.data_path)
 
     def create_kb(self,data_path):
 
@@ -29,10 +29,9 @@ class KB:
         self.database = []
         for doc in chunked_docs:
             path = doc['path']
-            self.database = []
             for chunk in tqdm(doc['chunks'],desc="Saving embedding data..."):
                 embedding = (self.encoder_model).encode(chunk.page_content)
-                self.database.extend({'chunk':chunk.page_content,'path':path,'embedding':embedding})
+                (self.database).append({'chunk':chunk.page_content,'path':path,'embedding':embedding})
 
         return self.database
     
@@ -55,18 +54,23 @@ class KB:
         results = []
         embedding_matrix = np.array([d["embedding"] for d in self.database])  # Shape: (n, d)
 
-        similarities = np.dot(embedding_matrix,query_embedding)/(norm(embedding_matrix, axis=1)*norm(query_embedding))
-
         if method == 'cosine':
             similarities = np.dot(embedding_matrix,query_embedding)/(norm(embedding_matrix, axis=1)*norm(query_embedding))
             
-            results = [{"id": self.database[i]["id"], "cosine_similarity": similarities[i],"chunk": self.database[i]["chunk"],"path":self.database[i]['path']} for i in range(len(similarities))]
+            results = [{"cosine_similarity": similarities[i],"chunk": self.database[i]["chunk"],"path":self.database[i]['path']} for i in range(len(similarities))]
             
-            results = results.sort(key='cosine_similarity')
+            results.sort(key=lambda item: item['cosine_similarity'],reverse=True)
+        
+        elif method == 'euclidean':
+            distances = np.linalg.norm(embedding_matrix - query_embedding, axis=1)
+            results = [{"euclidean_distance": distances[i],"chunk": self.database[i]["chunk"],"path":self.database[i]['path']} for i in range(len(distances))]
+            results.sort(key=lambda item: item['euclidean_distance'])
+        else:
+            raise NotImplementedError
+        
+        retrieved_chunks = results[:top_k]
 
-            results = results[:top_k]
-
-        return results
+        return retrieved_chunks
             
 
         #     ({"cosine_similarity": cosine_similarity,"chunk": d["chunk"],"path":d['path']})
