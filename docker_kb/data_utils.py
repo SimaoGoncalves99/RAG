@@ -1,12 +1,16 @@
-import os
-from tqdm import tqdm
-from langchain.text_splitter import MarkdownHeaderTextSplitter
-from sentence_transformers import SentenceTransformer
 import json
-import numpy as np
-from numpy.linalg import norm
-from typing import Union,List,Dict
+import os
 import re
+from typing import Dict, List
+
+import numpy as np
+import requests
+from langchain.text_splitter import MarkdownHeaderTextSplitter
+from langchain_core.documents import Document
+from numpy.linalg import norm
+from sentence_transformers import SentenceTransformer
+from tqdm import tqdm
+
 
 class KB:
     """
@@ -51,7 +55,7 @@ class KB:
             self.database = self.create_kb(self.data_path)
 
 
-    def create_kb(self, data_path:str)->List[Dict[str,str|np.ndarray]]:
+    def create_kb(self, data_path:str)->List[Dict[str,str|Document|np.ndarray]]:
         """Generate all of the knowledge base content.
         Start by parsing the markdown files located at 'data-path' and then 
         chunk them in smaller sections so that the LLM can select the adequate
@@ -80,6 +84,7 @@ class KB:
         for doc in chunked_docs:
             path = doc['path']
             for chunk in tqdm(doc['chunks'],desc="Saving embedding data..."):
+                assert isinstance(chunk, Document), "Chunk should be a langchain_core.documents.Document variable"
                 embedding = (self.encoder_model).encode(chunk.page_content)
                 (self.database).append({'chunk':chunk.page_content,'path':path,'embedding':embedding})
 
@@ -170,42 +175,98 @@ class KB:
         return retrieved_chunks
 
 
-def parse_md_files(kb_path):
-    """Generate markdown documents from data path
+def parse_md_files(kb_path:str,git_root_path:str="https://github.com/docker/docs/tree/main/content/get-started")->Dict[str,str]:
+    """Recursively iterate through the files at 'kb_path'
+    and return all the markdown documents. Remove the initial
+    table that is found at the top of the markdown documents
+    by using a regex pattern and save the resultant texts in
+    a dictionary ('kb_dic').
 
     Args:
-        kb_path (_type_): _description_
+        kb_path (str): Path to the directory where the markdown documents to
+          be considered for the knowledge base are stored
+        git_root_path (str): Path to the original remote location of the markdown files
 
     Returns:
-        _type_: _description_
+        kb_dic (Dict[str,str]): A dictionary indexed either by the file location in its remote
+            repository or indexed by the file location in disk. The dictionary maps to parsed .md files
     """
 
-    kb = {}
+    kb_dic = {}
+
+    #Regex patter that matches a markdown table at the start
+    #of the document
     regex = r"(?s)^---.*?---"
+
+    #Recursively iterate over the kb_path directory
     for root, dirs, files in os.walk(kb_path):
         for file in files:
+            #Fetch markdown files
             if file.endswith('.md'):
+                #Markdown files path
                 file_path = os.path.join(root, file)
-    
+                #Open the markdown file, pre-process and save it
+                # to a dictionary indexed by the local file path or
+                #the corresponding git repo path
                 with open(file_path, 'r', encoding='utf-8') as file:
                     text = file.read()
-                    #Delete the initial table from the md_files
+                    #Delete the initial table from the .md files
                     text = re.sub(regex, "", text).strip()
                     if len(text) != 0:
-                        kb[file_path] = text
-        
-    return kb
+                        key = file_path
+                        if len(git_root_path)!=0:
+                            key = file_path.replace(kb_path,git_root_path)
+                            response = requests.head(key, allow_redirects=True, timeout=5)
+                            if response.status_code == 200:
+                                kb_dic[key] = text
+                            else:
+                                kb_dic[file_path] = text
+                        else:
+                            kb_dic[file_path] = text
+
+    return kb_dic
 
 
-def chunk_documents(kb):
+def chunk_documents(kb_dic:Dict[str,str])->List[Dict[str,str|List[Document]]]:
+    """Split the markdown documents into chunks.
+    Start of by identifying what is the maximum number of headers found in the
+    knowledgebase documents. Then, chunk all of the documents, one chunk per
+    document header.
+
+    Args:
+        kb_dic (Dict[str,str]): A dictionary indexed either by the file location in its remote
+            repository or indexed by the file location in disk. The dictionary maps to parsed .md files
+
+    Returns:
+        total_chunks (List[Dict[str,str|List[Document]]]): A list of dictionaries holding
+        in each item a chunked document 'chunks' key and the path to the original document
+        'path' key
+    """
+
+    max_hashtags = 0
+    for key in kb_dic:
+        text = kb_dic[key]
+        for line in text.splitlines():
+            # Search for consecutive hashtags at the start of each line
+            match = re.match(r"^#+", line)
+            if match:
+                # Check if the maximum number of consecutive hashtags in
+                # the current document surpasses the current maximum
+                # and update if True
+                max_hashtags = max(max_hashtags, len(match.group(0)))
+    
+    #Check how many headers we will have on the current knowledgebase .md documents
+    headers_to_split_on = []
+    for iter in range(1,max_hashtags):
+        headers_to_split_on.append((iter*"#",f"Header {iter}"))
     
     total_chunks = []
-
-    headers_to_split_on = [("#", "Header 1"), ("##", "Header 2"), ("###", "Header 3"), ("####", "Header 4"), ("#####", "Header 5"),("######", "Header 6")]
+    #Use the langchain library to chunk the .md documents on their headers
     text_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on)
-    for key in kb:
-        sections = text_splitter.split_text(kb[key])
-
+    
+    #Store in a list each document, separated into chunks, along its path
+    for key in kb_dic:
+        sections = text_splitter.split_text(kb_dic[key])
         total_chunks.append({'path':key,'chunks':sections})
 
     return total_chunks
