@@ -76,16 +76,6 @@ class KB:
         #     ({"cosine_similarity": cosine_similarity,"chunk": d["chunk"],"path":d['path']})
         # elif method == 'euclidean':
 
-# # Convert embeddings to a matrix for batch processing
-# embedding_matrix = np.array([d["embedding"] for d in embedding_dicts])  # Shape: (n, d)
-
-# # Compute Euclidean distances in batch
-# distances = np.linalg.norm(embedding_matrix - single_embedding, axis=1)
-
-# # Combine results with IDs
-# results = [{"id": embedding_dicts[i]["id"], "euclidean_distance": distances[i]} for i in range(len(distances))]
-
-
 def clone_data_repo(repo_url, clone_path,save_dir):
     # Clone the repo sparsely
     sparse_clone_path = os.path.join(clone_path, "docker_docs_repo")
