@@ -21,7 +21,7 @@ def main(args):
     # Knowledgebase initialization
     kb_obj = KB(
         encoder_model=encoder_model,
-        data_path=args.documents_path,
+        data_path=args.data_path,
         load_kb_content=args.load_kb_content,
     )
 
@@ -36,7 +36,7 @@ def main(args):
                 assert isinstance(
                     item["embedding"], np.ndarray
                 ), "The embedding should be a np.ndarray variable"
-                item["embedding"].tolist()
+                item["embedding"] = item["embedding"].tolist()
             json.dump(kb_obj.database, file)
 
     # Fetch query specific context for the LLM
@@ -90,10 +90,12 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--documents_path",
+        "--data_path",
         type=str,
         default="/mnt/data/docker_docs",
-        help="Increase output verbosity",
+        help="The path to the locally saved original documents as found in"
+        + "https://github.com/docker/docs/tree/main/content/get-started or the path to a saved"
+        + ".json file with the already processed knowledgebase data",
     )
 
     parser.add_argument(
@@ -111,7 +113,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--json_path",
         type=str,
-        default="./kb_json",
+        default="./kb.json",
         help="Path to the knowledgebase content",
     )
 

@@ -1,12 +1,13 @@
-from fastapi import FastAPI, Body
-from fastapi.responses import PlainTextResponse
+import os
+import time
 import uvicorn
-from sentence_transformers import SentenceTransformer
+from fastapi import Body, FastAPI
+from fastapi.responses import PlainTextResponse
 from mistralai import Mistral
+from sentence_transformers import SentenceTransformer
+
 from docker_kb.data_utils import KB
 from docker_kb.utils import generate_prompt
-import os
-
 
 app = FastAPI()
 
@@ -32,29 +33,56 @@ else:
 async def process_query(
     request: str = Body(..., media_type="text/plain")
 ) -> PlainTextResponse:
+    t0 = time.time()
 
     response = {"code": 200, "result": ""}
 
+    print("Retrieving text chunks...\n")
     # Fetch context
     retrieved_chunks = kb_obj.retrieve_context(
         request, top_k=10, method="cosine"
     )
+    print(
+        "Elapsed time for retrieving the text chunks: {:.1f} seconds\n".format(
+            time.time() - t0
+        )
+    )
 
+    t_prompt = time.time()
+    print("Building prompt...\n")
     # Build LLM input
     messages, prompt = generate_prompt(
         query=request, retrieved_chunks=retrieved_chunks, one_shot=True
     )
+    print(
+        "Elapsed time for building the prompt: {:.1f} seconds\n".format(
+            time.time() - t_prompt
+        )
+    )
 
+    print("Awaiting for chatbot answer...")
+    t_answer = time.time()
     # Send a request to a LLM model through an API
     chat_response = client.chat.complete(
         model="mistral-large-latest", messages=messages
+    )
+    print(
+        "Elapsed time for the chatbot answer: {:.1f} seconds\n".format(
+            time.time() - t_answer
+        )
     )
 
     if chat_response is not None and chat_response.choices is not None:
         response["result"] = chat_response.choices[0].message.content
 
     print(f"Chatbot prompt:\n{prompt}\n\n")
-    print(f"Chatbot answer:\n{response['result']}\n")
+    print(f"Chatbot answer:\n{response['result']}\n\n")
+
+    print(
+        "Elapsed time for processing the user request: {:.1f} seconds\n".format(
+            time.time() - t0
+        )
+    )
 
     return PlainTextResponse(response["result"])
 

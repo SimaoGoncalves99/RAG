@@ -1,0 +1,31 @@
+# Start from a Miniconda base image
+FROM continuumio/miniconda3
+
+RUN conda update conda -y
+
+RUN conda install -n base conda-libmamba-solver 
+RUN conda config --set solver libmamba 
+
+RUN conda install pydantic -c conda-forge 
+RUN conda install -c conda-forge uvicorn 
+RUN conda install pytorch torchvision pytorch-cuda=12.4 -c pytorch -c nvidia 
+RUN conda install -c conda-forge fastapi
+
+# Set working directory
+WORKDIR /app
+
+# Copy project files to the container
+COPY ./requirements.txt /app/requirements.txt
+COPY ./setup.py /app/setup.py
+COPY ./docker_kb /app/docker_kb
+COPY ./api/__main__.py api.py
+
+# Create a Conda environment and install dependencies
+RUN conda create -n RAG python=3.10 && \
+    conda clean -a && \
+    echo "conda activate RAG" >> ~/.bashrc
+
+# Activate the environment and install Python packages
+RUN /bin/bash -c "source ~/.bashrc && conda activate RAG && pip install . && pip install -r requirements.txt"
+
+ENTRYPOINT [ "uvicorn","--host","0.0.0.0","8000","api:app"]
