@@ -114,7 +114,7 @@ if __name__ == "__main__":
         "--json_path",
         type=str,
         default="./kb.json",
-        help="Path to the knowledgebase content",
+        help="Path to the file with the already processed knowledgebase data",
     )
 
     parser.add_argument(
