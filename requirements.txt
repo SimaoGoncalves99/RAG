@@ -8,3 +8,4 @@ sentence_transformers==3.3.1
 setuptools==59.6.0
 tqdm==4.67.0
 uvicorn==0.32.1
+./

@@ -26,22 +26,19 @@ RUN conda install -c conda-forge uvicorn
 RUN conda install pytorch torchvision pytorch-cuda=11.7 -c pytorch -c nvidia
 RUN conda install -c conda-forge fastapi
 
-# # Create a Conda environment and install dependencies
-# RUN conda create -n RAG python=3.10.15 && \
-#     conda clean -a
 
 # Activate the environment and install Python packages using pip
 # Set working directory
 WORKDIR /app
+
+COPY ./setup.py /app/setup.py
+COPY ./docker_kb /app/docker_kb  
+
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install -r requirements.txt --timeout=300
 
-# Copy project files to the container
-COPY ./setup.py /app/setup.py
-COPY ./docker_kb /app/docker_kb
 COPY ./api/__main__.py api.py
-RUN pip install setuptools
-RUN pip install .
+
 
 
 ENTRYPOINT ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
