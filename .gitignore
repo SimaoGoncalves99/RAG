@@ -1,3 +1,4 @@
 *.json
 *.pyc
+build/
 docker_kb.egg-info/
