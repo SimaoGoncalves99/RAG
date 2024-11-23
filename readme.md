@@ -12,10 +12,10 @@ The pipeline is established as follows:<br>
 
   - **KB**:<br>
     - The KB is built from the get-started docs of Docker here:https://github.com/docker/docs/tree/main/content/get-started;<br>
-    - The documents in the KB are in *.md* format and must be pre-processed so that the LLM can digest them:<br>
+    - The documents in the KB are in `.md` format and must be pre-processed so that the LLM can digest them:<br>
         -  Each document is parsed into a string;<br>
         -  Each document's inital table with a general overview is removed;<br>
-        -  Each document is chunked accordingly to its sections (*.md* headers denoted by hashes *#*).<br>
+        -  Each document is chunked accordingly to its sections (`.md` headers denoted by hashes `#`).<br>
   - **Text Encoding**:<br>
     - Each chunk is encoded by a [Sentence Transformer model](https://sbert.net/), along with the user query. For this project I considered [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) from HuggingFace.<br>
   - **Context Retrieval**:<br>
@@ -37,12 +37,12 @@ By using the sparse-checkout, you are allowed to clone only a specific folder or
 
 ```
 git clone --no-checkout https://github.com/docker/docs.git ./docs
-cd ./docs-test
+cd ./docs
 git sparse-checkout init --cone
 git sparse-checkout set tree/main/content/get-started
 git checkout
 ```
-In *./docs* you can now find all the necessary *.md* files for the KB.<br> 
+In *./docs* you can now find all the necessary `.md` files for the KB.<br> 
 
 ### Environment Setup
 Create a virtual environment and install the required packages<br>
@@ -80,10 +80,14 @@ From the project directory, run:<br>
 
 The file `__main__.py` under the `api` folder defines an API that can be launched from the command line.<br>
 After launching, it is possible access the API Swagger and to interact with the chatbot through HTTP post requests.<br>
-To launch the API, first define the *API_KEY* and *DATA_PATH* environment variables and then run
-`__main__.py`under the *docker-basics-rag/api* folder<br>
+
+To launch the API, first define the `API_KEY` and `DATA_PATH` environment variables and then run
+`__main__.py`under the `docker-basics-rag/api` folder<br>
+
 """export API_KEY="2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3"
    export DATA_PATH="./docs"
    cd api
    python __main__.py
 """
+
+If all is done correctly, you can easily access the Swagger through http://127.0.0.1:8000/docs for example.
