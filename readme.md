@@ -2,17 +2,20 @@
 Author: Simão Gonçalves; E-mail: simao.campos.goncalves@gmail.com<br>
 
 In this project I implement a system capable of handling requests related to common issues frequently faced by developers regarding containerization (Docker) and related technologies.<br>
-To answer the users' questions I implement a [RAG](https://cloud.google.com/use-cases/retrieval-augmented-generation?hl=en) system. The idea is to have a knowledgebase (KB) to serve as factual grounding for a Large language model (LLM) that is prompted to address the users' questions.<br>
+
+To answer the users' questions I implement a [RAG](https://cloud.google.com/use-cases/retrieval-augmented-generation?hl=en) system.<br>
+
+The idea is to have a knowledgebase (KB) to serve as factual grounding for a Large language model (LLM) that is prompted to address the users' questions.<br>
 To answer the users' queries, the LLM is given context provided through the KB, so that its' answers are supported by actual documentation instead of being generic.<br>
 
 The pipeline is established as follows:<br>
 
   - **KB**:<br>
     - The KB is built from the get-started docs of Docker here:https://github.com/docker/docs/tree/main/content/get-started;<br>
-    - The documents in the KB are in `.md` format and must be pre-processed so that the LLM can digest them:<br>
+    - The documents in the KB are in *.md* format and must be pre-processed so that the LLM can digest them:<br>
         -  Each document is parsed into a string;<br>
         -  Each document's inital table with a general overview is removed;<br>
-        -  Each document is chunked accordingly to its sections (`.md` headers denoted by hashes `#`).<br>
+        -  Each document is chunked accordingly to its sections (*.md* headers denoted by hashes *#*).<br>
   - **Text Encoding**:<br>
     - Each chunk is encoded by a [Sentence Transformer model](https://sbert.net/), along with the user query. For this project I considered [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) from HuggingFace.<br>
   - **Context Retrieval**:<br>
@@ -23,7 +26,7 @@ The pipeline is established as follows:<br>
     -   To answer the user's query I used the [MistralAI client](https://docs.mistral.ai/getting-started/clients/) API.<br>
     -   I prompted the LLM such that:<br>
         -  It has the task of addressing the users' questions;<br>
-        -  It uses exclusively the `top_k` chunks to answer the request and not prior knowledge;<br>
+        -  It uses exclusively the *top_k* chunks to answer the request and not prior knowledge;<br>
         -  It returns the url for the files in the original [Docker repo](https://github.com/docker/docs/tree/main/content/get-started) (can also return local disk location).<br>
 
 ## Setup
@@ -39,7 +42,7 @@ git sparse-checkout init --cone
 git sparse-checkout set tree/main/content/get-started
 git checkout
 ```
-In `./docs` you can now find all the necessary `.md` files for the KB.<br> 
+In *./docs* you can now find all the necessary *.md* files for the KB.<br> 
 
 ### Environment Setup
 Create a virtual environment and install the required packages<br>

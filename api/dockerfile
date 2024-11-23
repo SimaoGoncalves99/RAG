@@ -40,7 +40,7 @@ RUN pip install -r requirements.txt --timeout=300
 COPY ./setup.py /app/setup.py
 COPY ./docker_kb /app/docker_kb
 COPY ./api/__main__.py api.py
-
+RUN pip install setuptools
 RUN pip install .
 
 
