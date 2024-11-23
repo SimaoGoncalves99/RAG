@@ -1,4 +1,4 @@
 *.json
 *.txt
 *.pyc
-./docker_kb.egg-info/
+docker_kb.egg-info/
