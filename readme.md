@@ -87,10 +87,11 @@ After launching, it is possible access the API Swagger and to interact with the 
 To launch the API, first define the `API_KEY` and `DATA_PATH` environment variables and then run
 `__main__.py`under the `docker-basics-rag/api` folder<br>
 
-```export API_KEY="2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3"
-   export DATA_PATH="./docs"
-   cd api
-   python __main__.py
+```
+export API_KEY="2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3"
+export DATA_PATH="./docs"
+cd api
+python __main__.py
 ```
 
 If all is done correctly, you can easily access the Swagger through http://127.0.0.1:8000/docs for example.
