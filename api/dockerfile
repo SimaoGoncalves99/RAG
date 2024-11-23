@@ -1,31 +1,47 @@
 # Start from a Miniconda base image
 FROM continuumio/miniconda3
 
-RUN conda update conda -y
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    sudo \
+    gpg
 
+# Add the NVIDIA package repository
+RUN curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+    && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+# Update package lists again after adding NVIDIA repository
+RUN apt-get update
+
+# Install the NVIDIA container toolkit
+RUN apt-get install -y nvidia-docker2 nvidia-container-toolkit 
+RUN conda update conda -y
 RUN conda install -n base conda-libmamba-solver 
 RUN conda config --set solver libmamba 
-
 RUN conda install pydantic -c conda-forge 
 RUN conda install -c conda-forge uvicorn 
-RUN conda install pytorch torchvision pytorch-cuda=12.4 -c pytorch -c nvidia 
+RUN conda install pytorch torchvision pytorch-cuda=11.7 -c pytorch -c nvidia
 RUN conda install -c conda-forge fastapi
 
+# # Create a Conda environment and install dependencies
+# RUN conda create -n RAG python=3.10.15 && \
+#     conda clean -a
+
+# Activate the environment and install Python packages using pip
 # Set working directory
 WORKDIR /app
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install -r requirements.txt --timeout=300
 
 # Copy project files to the container
-COPY ./requirements.txt /app/requirements.txt
 COPY ./setup.py /app/setup.py
 COPY ./docker_kb /app/docker_kb
 COPY ./api/__main__.py api.py
 
-# Create a Conda environment and install dependencies
-RUN conda create -n RAG python=3.10 && \
-    conda clean -a && \
-    echo "conda activate RAG" >> ~/.bashrc
+RUN pip install .
 
-# Activate the environment and install Python packages
-RUN /bin/bash -c "source ~/.bashrc && conda activate RAG && pip install . && pip install -r requirements.txt"
 
-ENTRYPOINT [ "uvicorn","--host","0.0.0.0","8000","api:app"]
+ENTRYPOINT ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
