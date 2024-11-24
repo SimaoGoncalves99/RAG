@@ -18,7 +18,7 @@ across various topics, such as containerization (Docker) and related technologie
 
 Please send a request through the /conversation/ POST request for the Chatbot to address your issue
 
-## Request body description ##:
+## Request body description:
 
 Write your query on the field `string` in the `Request body`. Just press `Try it out` to get started!
 
