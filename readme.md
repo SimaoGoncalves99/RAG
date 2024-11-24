@@ -8,8 +8,6 @@ To answer the users' questions I implement a [RAG](https://cloud.google.com/use-
 The idea is to have a knowledgebase (KB) to serve as factual grounding for a Large language model (LLM) that is prompted to address the users' questions.<br>
 To answer the users' queries, the LLM is given context provided through the KB, so that its' answers are supported by actual documentation instead of being generic.<br>
 
-You can give a quick overview of the final outcome at the Service on Google Cloud Platform: https://docker-chatbot-515638245244.europe-west6.run.app <br>
-
 The pipeline is established as follows:<br>
 
   - **KB**:<br>
