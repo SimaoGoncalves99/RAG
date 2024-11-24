@@ -85,7 +85,7 @@ The file `__main__.py` under the `api` folder defines an API that can be launche
 After launching, it is possible access the API Swagger and to interact with the chatbot through HTTP post requests.<br>
 
 To launch the API, first define the `API_KEY` and `DATA_PATH` environment variables and then run
-`__main__.py`under the `docker-basics-rag/api` folder<br>
+`__main__.py`under the *docker-basics-rag/api* folder<br>
 
 ```
 export API_KEY="2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3"
@@ -95,3 +95,48 @@ python __main__.py
 ```
 
 If all is done correctly, you can easily access the Swagger through http://127.0.0.1:8000/docs for example.
+
+## Containarized APis
+
+In this project you can find under the *./apis* folder the files:<br>
+
+- `.env`
+- `docker-compose.yaml`
+- `docker-compose-gcp`
+- `dockerfile`
+
+These files are used to containarize the API defined in `__main__.py`<br>
+
+### Local container
+
+By building and running with the `docker-compose.yaml` file we are able to run a local containarized API<br>
+
+In the `.env` file set make sure you have `DOCKER_BASICS_RAG_VER=0.0.1`<br>
+
+'''
+cd ./apis
+docker compose -f docker-compose.yaml build  docker_basics_rag --no-cache
+docker compose -f docker-compose.yaml up -d --force-recreate  docker_basics_rag 
+'''
+
+### GCP container
+
+By building the `docker-compose-gcp.yaml` file we are able to build a docker image that can be later used in Google Cloud Platform<br>
+
+In the `.env` file set make sure you have `DOCKER_BASICS_RAG_VER=0.0.2`<br>
+
+'''
+cd ./apis
+docker compose -f docker-compose-gcp.yaml build  docker_basics_rag --no-cache
+'''
+
+To deploy on GCP you must first install [gcloud CLI](https://cloud.google.com/sdk/docs/install#deb) and autheticate to your account.<br>
+
+'''
+gcloud auth login
+'''
+
+To push the image to GCP make sure to follow the tutorial in https://cloud.google.com/artifact-registry/docs/docker/pushing-and-pulling 
+
+
+

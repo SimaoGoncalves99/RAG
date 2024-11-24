@@ -11,6 +11,6 @@ services:
       API_KEY: 2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3
       DATA_PATH: /app/database
     volumes:
-      - /mnt/data/docker_docs:/app/database:ro
+      - /mnt/data/docker_docs:/app/database:ro #NOTE change "/mnt/data/docker_docs" to your local data location (./docs)
     ports:
       - 5315:8000
