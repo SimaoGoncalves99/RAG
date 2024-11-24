@@ -51,6 +51,7 @@ git pull origin main
 mv ./content/get-started ../docs
 cd ..
 rm -rf temp_repo
+cd RAG
 ```
 
 In *./docs* you can now find all the necessary `.md` files for the KB.<br> 
@@ -73,7 +74,7 @@ E.g.<br>
 From the project directory, run:<br>
 
 ```
-python main.py --data_path ./docs --query How\ do\ I\ stop\ a\ docker\ container? --top_k 10 --score_method cosine
+python main.py --data_path ../docs --query How\ do\ I\ stop\ a\ docker\ container? --top_k 10 --score_method cosine
 ```
 
 ### Available configurations
@@ -96,31 +97,31 @@ The file `__main__.py` under the `api` folder defines an API that can be launche
 After launching, it is possible access the API Swagger and to interact with the chatbot through HTTP post requests.<br>
 
 To launch the API, first define the `API_KEY` and `DATA_PATH` environment variables and then run
-`__main__.py`under the *docker-basics-rag/api* folder<br>
+`__main__.py`under *api* folder<br>
 
+From the project root run:<br>
 ```
 export API_KEY="2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3"
-export DATA_PATH="./docs"
+export DATA_PATH="../docs"
 cd api
 python __main__.py
 ```
 
-If all is done correctly, you can easily access the Swagger through http://127.0.0.1:8000/docs for example.
+If all is done correctly, you can easily access the Swagger through http://localhost:8000/docs
 
-## Containarized APis
+## Containarized API
 
-In this project you can find under the *./apis* folder the files:<br>
+In this project you can find under the *api/local* folder the files:<br>
 
 - `.env`
 - `docker-compose.yaml`
-- `docker-compose-gcp`
 - `dockerfile`
 
 These files are used to containarize the API defined in `__main__.py`<br>
 
 ### Local container
 
-By building and running with the `docker-compose.yaml` file we are able to run a local containarized API<br>
+By building and running `docker-compose.yaml` we are able to run a containarized API locally<br>
 
 Make sure to correctly set `volumes` in `docker-compose.yaml` to the `docs` folder location in your disk.<br>
 
@@ -130,21 +131,8 @@ docker compose -f docker-compose.yaml build  docker_basics_rag --no-cache
 docker compose -f docker-compose.yaml up -d --force-recreate  docker_basics_rag 
 ```
 
-Check if your containarized API is running by going to: http://localhost:5315/docs#/
+Check if your containarized API is running by going to: http://localhost:5315/docs
 
 ### GCP container
 
-By running docker compose with the `docker-compose-gcp.yaml` file we are able to build a docker image that can be later used in Google Cloud Platform (GCP)<br>
-
-In the `.env` file set make sure you have `DOCKER_BASICS_RAG_VER=0.0.2`<br>
-
-```
-cd ./api
-docker compose -f docker-compose-gcp.yaml build  docker_basics_rag --no-cache
-```
-
-The created docker image can be pushed to your personal [docker hub](https://hub.docker.com/) repository and then can be used in a Service at GCP.<br>
-
-For this project I created the service:<br>
-
-https://docker-chatbot-515638245244.europe-west6.run.app
+Under work...
