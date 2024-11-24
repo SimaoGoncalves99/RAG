@@ -92,7 +92,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--data_path",
         type=str,
-        default="/mnt/data/docker_docs",
+        default="../docs",
         help="The path to the locally saved original documents as found in"
         + "https://github.com/docker/docs/tree/main/content/get-started or the path to a saved"
         + ".json file with the already processed knowledgebase data",

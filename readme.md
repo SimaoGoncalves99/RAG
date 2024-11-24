@@ -122,7 +122,7 @@ These files are used to containarize the API defined in `__main__.py`<br>
 
 By building and running with the `docker-compose.yaml` file we are able to run a local containarized API<br>
 
-In the `.env` file set make sure you have `DOCKER_BASICS_RAG_VER=0.0.1`<br>
+Make sure to correctly set `volumes` in `docker-compose.yaml` to the `docs` folder location in your disk.<br>
 
 ```
 cd ./api/local
