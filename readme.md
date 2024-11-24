@@ -37,7 +37,23 @@ The pipeline is established as follows:<br>
 Start of by cloning the https://github.com/docker/docs/ repository sparsely<br>
 By using the sparse-checkout, you are allowed to clone only a specific folder or set of folders (tree/main/content/get-started in this case)<br>
 
+From the project repository run:<br>
+
 ```
+cd ..
+mkdir temp_repo
+cd temp_repo
+git init
+git remote add -f origin https://github.com/docker/docs.git
+git config core.sparseCheckout true
+echo "content/get-started" >> .git/info/sparse-checkout
+git pull origin main
+mv ./content/get-started ../docs
+cd ..
+rm -rf temp_repo
+```
+
+
 git clone --no-checkout https://github.com/docker/docs.git ./docs
 cd ./docs
 git sparse-checkout init --cone
