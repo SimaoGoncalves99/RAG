@@ -113,11 +113,11 @@ By building and running with the `docker-compose.yaml` file we are able to run a
 
 In the `.env` file set make sure you have `DOCKER_BASICS_RAG_VER=0.0.1`<br>
 
-'''
+```
 cd ./api
 docker compose -f docker-compose.yaml build  docker_basics_rag --no-cache
 docker compose -f docker-compose.yaml up -d --force-recreate  docker_basics_rag 
-'''
+```
 
 ### GCP container
 
@@ -125,9 +125,9 @@ By building the `docker-compose-gcp.yaml` file we are able to build a docker ima
 
 In the `.env` file set make sure you have `DOCKER_BASICS_RAG_VER=0.0.2`<br>
 
-'''
+```
 cd ./api
 docker compose -f docker-compose-gcp.yaml build  docker_basics_rag --no-cache
-'''
+```
 
 
