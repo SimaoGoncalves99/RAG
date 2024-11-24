@@ -1,0 +1,12 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: docker-basics-rag-service
+spec:
+  template:
+    spec:
+      containers:
+        - image: europe-west1-docker.pkg.dev/docker-basics-rag-442712/docker-basics-rag-repo/docker-basics-rag-img:latest'
+          env:
+          ports:
+            - containerPort: 4000
