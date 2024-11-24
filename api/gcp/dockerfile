@@ -1,0 +1,37 @@
+# Start from a Miniconda base image
+FROM continuumio/miniconda3
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    sudo \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Update conda and install dependencies
+RUN conda update conda -y
+RUN conda install -n base conda-libmamba-solver -y
+RUN conda config --set solver libmamba
+
+# Install required Python libraries
+RUN conda install pydantic uvicorn -c conda-forge -y
+RUN conda install pytorch torchvision cpuonly -c pytorch -y
+RUN conda install -c conda-forge fastapi -y
+
+# Set working directory
+WORKDIR /app
+
+# Copy application code
+COPY ./setup.py /app/setup.py
+COPY ./docker_kb /app/docker_kb  
+COPY ./requirements.txt /app/requirements.txt
+RUN pip install -r requirements.txt --timeout=300
+
+# Copy the main API file
+COPY ./api/__main__.py api.py
+
+# Expose the application port
+EXPOSE 8000
+
+# Run the application
+ENTRYPOINT ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]

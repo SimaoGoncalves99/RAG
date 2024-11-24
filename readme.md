@@ -8,6 +8,8 @@ To answer the users' questions I implement a [RAG](https://cloud.google.com/use-
 The idea is to have a knowledgebase (KB) to serve as factual grounding for a Large language model (LLM) that is prompted to address the users' questions.<br>
 To answer the users' queries, the LLM is given context provided through the KB, so that its' answers are supported by actual documentation instead of being generic.<br>
 
+You can give a quick overview of the final outcome at the Service on Google Cloud Platform: https://docker-chatbot-515638245244.europe-west6.run.app <br>
+
 The pipeline is established as follows:<br>
 
   - **KB**:<br>
@@ -121,7 +123,7 @@ docker compose -f docker-compose.yaml up -d --force-recreate  docker_basics_rag
 
 ### GCP container
 
-By building the `docker-compose-gcp.yaml` file we are able to build a docker image that can be later used in Google Cloud Platform<br>
+By running docker compose with the `docker-compose-gcp.yaml` file we are able to build a docker image that can be later used in Google Cloud Platform (GCP)<br>
 
 In the `.env` file set make sure you have `DOCKER_BASICS_RAG_VER=0.0.2`<br>
 
@@ -130,4 +132,8 @@ cd ./api
 docker compose -f docker-compose-gcp.yaml build  docker_basics_rag --no-cache
 ```
 
+The created docker image can be pushed to your personal [docker hub](https://hub.docker.com/) repository and then can be used in a Service at GCP.<br>
 
+For this project I created the service:<br>
+
+https://docker-chatbot-515638245244.europe-west6.run.app
