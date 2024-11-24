@@ -1,14 +1,21 @@
 # Start from a Miniconda base image
 FROM continuumio/miniconda3
+# FROM python:3.12-slim
 
-ENV PORT=8000
+# ENV PORT=8080
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
+    echo \
     sudo \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN sudo apt-get install apt-transport-https ca-certificates gnupg curl
+RUN curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+RUN RUN echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg && apt-get update -y && apt-get install google-cloud-cli -y
 
 # Update conda and install dependencies
 RUN conda update conda -y
@@ -33,7 +40,7 @@ RUN pip install -r requirements.txt --timeout=300
 COPY ./api/__main__.py api.py
 
 # Expose the application port
-EXPOSE 8000
+EXPOSE 8080
 
 # Run the application
 ENTRYPOINT ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "$PORT"]
