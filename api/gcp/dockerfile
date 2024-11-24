@@ -1,6 +1,8 @@
 # Start from a Miniconda base image
 FROM continuumio/miniconda3
 
+ENV PORT=8000
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     curl \
@@ -34,4 +36,4 @@ COPY ./api/__main__.py api.py
 EXPOSE 8000
 
 # Run the application
-ENTRYPOINT ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "$PORT"]

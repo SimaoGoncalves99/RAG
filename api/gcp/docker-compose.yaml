@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   docker_basics_rag_gcp:
-    env_file: ./api/gcp/.env
+    env_file: .env
     image: docker_basics_rag_gcp:${DOCKER_BASICS_RAG_VER}
     build:
       context: ../../
@@ -12,5 +12,3 @@ services:
       DATA_PATH: /app/database
     volumes:
       - /mnt/data/docker_docs:/app/database:ro #NOTE change "/mnt/data/docker_docs" to your local data location (./docs)
-    ports:
-      - 5315:8000

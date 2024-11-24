@@ -9,7 +9,27 @@ from sentence_transformers import SentenceTransformer
 from docker_kb.data_utils import KB
 from docker_kb.utils import generate_prompt
 
-app = FastAPI()
+
+description = """
+Welcome to Big Company's IT Chatbot API!
+
+This Chatbot is specialized in addressing common issues 
+across various topics, such as containerization (Docker) and related technologies.
+
+Please send a request through the /conversation/ POST request for the Chatbot to address your issue
+
+## Request body description ##:
+
+Write your query on the field `string` in the `Request body`. Just press `Try it out` to get started!
+
+"""
+
+app = FastAPI(
+    title="Big Company's IT Chatbot", description=description, version="1.0.0"
+)
+
+port = os.environ.get("PORT")
+
 
 # Encoder initialization
 encoder_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")

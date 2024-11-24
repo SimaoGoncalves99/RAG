@@ -121,6 +121,8 @@ docker compose -f docker-compose.yaml build  docker_basics_rag --no-cache
 docker compose -f docker-compose.yaml up -d --force-recreate  docker_basics_rag 
 ```
 
+Check if your containarized API is running by going to: http://localhost:5315/docs#/
+
 ### GCP container
 
 By running docker compose with the `docker-compose-gcp.yaml` file we are able to build a docker image that can be later used in Google Cloud Platform (GCP)<br>

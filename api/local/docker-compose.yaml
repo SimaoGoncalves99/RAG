@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   docker_basics_rag:
-    env_file: ./api/local/.env
+    env_file: .env
     image: docker_basics_rag:${DOCKER_BASICS_RAG_VER}
     build:
       context: ../../
@@ -10,6 +10,7 @@ services:
     environment:
       API_KEY: 2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3
       DATA_PATH: /app/database
+      PORT: 8000
     volumes:
       - /mnt/data/docker_docs:/app/database:ro #NOTE change "/mnt/data/docker_docs" to your local data location (./docs)
     deploy:
