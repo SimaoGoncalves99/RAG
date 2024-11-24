@@ -53,13 +53,6 @@ cd ..
 rm -rf temp_repo
 ```
 
-
-git clone --no-checkout https://github.com/docker/docs.git ./docs
-cd ./docs
-git sparse-checkout init --cone
-git sparse-checkout set tree/main/content/get-started
-git checkout
-```
 In *./docs* you can now find all the necessary `.md` files for the KB.<br> 
 
 ### Environment Setup
