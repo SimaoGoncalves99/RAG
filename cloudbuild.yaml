@@ -1,5 +1,5 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-f', 'Dockerfile.prod', '-t', 'europe-west1-docker.pkg.dev/docker-basics-rag-442712/docker-basics-rag-repo/docker-basics-rag-img:latest', '.']
+    args: ['build', '-f', 'Dockerfile.prod', '-t', 'europe-west1-docker.pkg.dev/docker-basics-rag-442712/docker-basics-rag-repo/docker-basics-rag-img:latest', '.', '--no-cache']
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'europe-west1-docker.pkg.dev/docker-basics-rag-442712/docker-basics-rag-repo/docker-basics-rag-img:latest']

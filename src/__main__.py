@@ -1,6 +1,5 @@
 import os
 import time
-import uvicorn
 from fastapi import Body, FastAPI
 from fastapi.responses import PlainTextResponse
 from mistralai import Mistral
@@ -9,6 +8,9 @@ from sentence_transformers import SentenceTransformer
 from docker_kb.data_utils import KB
 from docker_kb.utils import generate_prompt
 
+import debugpy
+
+debugpy.listen(("0.0.0.0", 5678))
 
 description = """
 Welcome to Big Company's IT Chatbot API!
@@ -28,6 +30,15 @@ app = FastAPI(
     title="Big Company's IT Chatbot", description=description, version="1.0.0"
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 # Encoder initialization
 encoder_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
 
@@ -45,6 +56,12 @@ if os.environ.get("DATA_PATH") is not None:
 else:
     raise RuntimeError
 
+# Define the API endpoints
+@app.get('/')
+def health():
+    return {
+        "message": "OK 🚀"
+    }
 
 @app.post("/conversation/")
 async def process_query(
@@ -102,7 +119,3 @@ async def process_query(
     )
 
     return PlainTextResponse(response["result"])
-
-
-if __name__ == "__main__":
-    uvicorn.run("__main__:app", host="0000", port=8000)

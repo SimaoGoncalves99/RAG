@@ -5,6 +5,11 @@ ENV PYTHONUNBUFFERED True
 # set the working directory
 WORKDIR /usr/src/app
 
+COPY /mnt/data/docker_docs: ./database:ro
+
+ENV API_KEY = "2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3"
+ENV DATA_PATH = ./database
+
 # Copy application code
 COPY ./setup.py ./setup.py
 COPY ./docker_kb ./docker_kb  
