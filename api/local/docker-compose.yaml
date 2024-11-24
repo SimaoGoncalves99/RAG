@@ -10,9 +10,8 @@ services:
     environment:
       API_KEY: 2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3
       DATA_PATH: /app/database
-      PORT: 8000
     volumes:
-      - /mnt/data/docker_docs:/app/database:ro #NOTE change "/mnt/data/docker_docs" to your local data location (./docs)
+      - /home/scg/docs:/app/database:ro #NOTE change "/home/scg/docs" to your local data location
     deploy:
       resources:
         reservations:
