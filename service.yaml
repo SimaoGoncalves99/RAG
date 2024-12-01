@@ -8,28 +8,5 @@ spec:
       containers:
         - image: europe-west1-docker.pkg.dev/docker-basics-rag-442712/docker-basics-rag-repo/docker-basics-rag-img:latest
           env:
-          resources:
-            requests:
-              cpu: "1"
-              memory: "512Mi"
-            limits:
-              cpu: "2"
-              memory: "8Gi"
-          readinessProbe:
-            httpGet:
-              path: /healthz
-              port: 4000
-            initialDelaySeconds: 10   # Delay before the first health check
-            periodSeconds: 5          # Period between health checks
-            timeoutSeconds: 5         # Timeout for each health check
-            failureThreshold: 3       # Number of failed checks before the container is considered unhealthy
-          livenessProbe:
-            httpGet:
-              path: /healthz
-              port: 4000
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            timeoutSeconds: 5
-            failureThreshold: 3
           ports:
             - containerPort: 4000

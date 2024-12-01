@@ -1,6 +1,7 @@
 {
     "name": "Python FastAPI Devcontainer",
     "build": {
+        "context": "../../",
         "dockerfile": "../Dockerfile.dev"
     },
     "customizations": {
@@ -18,7 +19,5 @@
     "forwardPorts": [
         "5678:5678"
     ],
-    "workspaceMount": "source=${localWorkspaceFolder},target=/code,type=bind,consistency=delegated",
-    "workspaceFolder": "/code",
     "runArgs": []
 }

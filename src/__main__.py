@@ -56,12 +56,12 @@ if os.environ.get("DATA_PATH") is not None:
 else:
     raise RuntimeError
 
+
 # Define the API endpoints
-@app.get('/')
+@app.get("/")
 def health():
-    return {
-        "message": "OK 🚀"
-    }
+    return {"message": "OK 🚀"}
+
 
 @app.post("/conversation/")
 async def process_query(
