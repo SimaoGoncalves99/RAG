@@ -8,7 +8,7 @@ services:
       context: ../../
       dockerfile: ./api/local/dockerfile
     environment:
-      API_KEY: 2nn1vqvgifrwP8RjsvyLXmTy4dmtTYE3
+      API_KEY: ${API_KEY}
       DATA_PATH: /app/database
     volumes:
       - /home/scg/docs:/app/database:ro #NOTE change "/home/scg/docs" to your local data location
