@@ -8,5 +8,12 @@ spec:
       containers:
         - image: europe-west1-docker.pkg.dev/docker-basics-rag-442712/docker-basics-rag-repo/docker-basics-rag-img:latest
           env:
+          resources:
+            requests:
+              cpu: "1"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "8Gi"
           ports:
             - containerPort: 4000

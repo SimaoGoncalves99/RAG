@@ -19,5 +19,10 @@
     "forwardPorts": [
         "5678:5678"
     ],
-    "runArgs": []
+    "workspaceMount": "source=${localWorkspaceFolder},target=/code,type=bind,consistency=delegated",
+    "workspaceFolder": "/code",
+    "runArgs": [
+        "--mount",
+        "type=bind,source=/home/scg/docs,target=/code/docs,consistency=cached"
+    ]
 }

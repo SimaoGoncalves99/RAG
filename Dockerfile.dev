@@ -14,4 +14,4 @@ WORKDIR /code
 COPY docs/ /code/docs/
 COPY RAG/ /code/
 
-ENV PYTHONPATH=/code
+ENV PYTHONPATH=/code/src
